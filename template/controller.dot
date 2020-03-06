@@ -20,10 +20,19 @@ class {{controllername}}Controller extends Controller
         $this->helpers          = $helpers;
     }
 
-    public function index(){
+    public function index(Request $request){
 
-        $data = $this->{{modelname}}->all()->toArray();
+        $data = $this->{{modelname}};
 
+        foreach($request->except(['page', 'token']) as $key => $value){
+            $data = $data->where($key, $value);
+        }
+        if($request->has('page') && $request->get('page') > 0){
+            $data = $data->paginate(10)->toArray();
+        }else{
+            $data = $data->get();
+            $data = $data ? $data->toArray() : [];
+        }
         return $this->helpers->apiArrayResponseBuilder(200, 'success', $data);
     }
 
@@ -31,9 +40,9 @@ class {{controllername}}Controller extends Controller
 
         $data = $this->{{modelname}}->where('id',$id)->first();
 
-        if( count($data) > 0){
+        if($data){
 
-            return $this->helpers->apiArrayResponseBuilder(200, 'success', $data);
+            return $this->helpers->apiArrayResponseBuilder(200, 'success', $data->toArray());
 
         }
 
@@ -54,7 +63,7 @@ class {{controllername}}Controller extends Controller
         
         if( $validation->passes() ){
             $this->{{modelname}}->save();
-            return $this->helpers->apiArrayResponseBuilder(201, 'created', ['id' => $this->{{modelname}}->id]);
+            return $this->helpers->apiArrayResponseBuilder(201, 'created', $this->{{modelname}});
         }else{
             return $this->helpers->apiArrayResponseBuilder(400, 'fail', $validation->errors() );
         }
@@ -62,32 +71,41 @@ class {{controllername}}Controller extends Controller
     }
 
     public function update($id, Request $request){
+        $arr = $request->all();
 
-        $status = $this->{{modelname}}->where('id',$id)->update($data);
-    
-        if( $status ){
-            
-            return $this->helpers->apiArrayResponseBuilder(200, 'success', 'Data has been updated successfully.');
-
+        $validation = Validator::make($request->all(), $this->{{modelname}}->rules);
+        if($validation->passes()){
+            $status = $this->{{modelname}}->where('id',$id)->update($request->all());
+            if( $status ){
+                return $this->helpers->apiArrayResponseBuilder(200, 'success', $this->{{modelname}}->where('id',$id)->first()->toArray());
+            }else{
+                return $this->helpers->apiArrayResponseBuilder(400, 'bad request', 'Error, data failed to update.');
+            }
         }else{
-
-            return $this->helpers->apiArrayResponseBuilder(400, 'bad request', 'Error, data failed to update.');
-
+            return $this->helpers->apiArrayResponseBuilder(400, 'fail', $validation->errors() );
         }
     }
 
     public function delete($id){
 
-        $this->{{modelname}}->where('id',$id)->delete();
-
-        return $this->helpers->apiArrayResponseBuilder(200, 'success', 'Data has been deleted successfully.');
+        $data = $this->{{modelname}}->where('id',$id)->first();
+        if($data){
+            $data->delete();
+            return $this->helpers->apiArrayResponseBuilder(200, 'Succes', ['id' => $id]);
+        }else{
+            return $this->helpers->apiArrayResponseBuilder(500, 'Ressource not found');
+        }
     }
 
     public function destroy($id){
 
-        $this->{{modelname}}->where('id',$id)->delete();
-
-        return $this->helpers->apiArrayResponseBuilder(200, 'success', 'Data has been deleted successfully.');
+        $data = $this->{{modelname}}->where('id',$id)->first();
+        if($data){
+            $data->delete();
+            return $this->helpers->apiArrayResponseBuilder(200, 'Succes', ['id' => $id]);
+        }else{
+            return $this->helpers->apiArrayResponseBuilder(500, 'Ressource not found');
+        }
     }
 
 

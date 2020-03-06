@@ -8,12 +8,20 @@ Class Helpers {
 			'status_code' => (isset($statusCode)) ? $statusCode : 500,
 			'message' => (isset($message)) ? $message : 'error'
 		];
-		if (count($data) > 0) {
-			$arr['data'] = $data;
+		if(is_array($data)){
+			if (count($data) > 0) {
+				$arr['data'] = $data;
+			}else{
+				$arr['data'] = [];
+			}
+		}else{
+			if ($data) {
+				$arr['data'] = $data;
+			}else{
+				$arr['data'] = [];
+			}
 		}
-
 		return response()->json($arr, $arr['status_code']);
-		//return $arr;
 		
 	}
 }
