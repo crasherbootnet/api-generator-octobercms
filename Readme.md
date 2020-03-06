@@ -1,5 +1,5 @@
 
-# API Generator 
+# API Generator DKS
 
 > October CMS plugin to build RESTful APIs.
 
@@ -10,9 +10,12 @@
   - Support relationship restful API
 
 ## Install
-```
-composer require AhmadFatoni.ApiGenerator
-```
+
+1) Install plugin AhmadFatoni.ApiGenerator
+2) Enter in folder plugin AhmadFatoni
+3) Clone a repository https://github.com/crasherbootnet/api-generator-octobercms.git
+4) Replace a directory {helpers,template} of api-generator-octobercms in apigenerator 
+5) Delete api-generator-octobercms
 
 ## Usage
 
@@ -37,14 +40,3 @@ composer require AhmadFatoni.ApiGenerator
 }
 ```
 * please replace single quote with quote
-
-## Contribute
-
-Pull Requests accepted.
-
-## Contact
-
-You can communicate with me using [linkedin](https://www.linkedin.com/in/ahmad-fatoni)
-
-## License
-The OctoberCMS platform is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
